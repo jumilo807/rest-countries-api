@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explora los países del mundo con la API REST Countries. Reto de Frontend Mentor.">
+    <title>REST Countries | ¿Dónde en el mundo?</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌎</text></svg>">
+
+    <!-- Tipografía del diseño: Nunito Sans 300, 600 y 800 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="header-inner">
+            <h1><a href="#" class="logo">¿Dónde en el mundo?</a></h1>
+
+            <button id="theme-btn" class="theme-btn" type="button" aria-pressed="false">
+                <svg class="icon" viewBox="0 0 512 512" aria-hidden="true">
+                    <path d="M283.2 512c79 0 151.1-35.9 198.9-94.8 7.1-8.7-.6-21.4-11.6-19.4-124.2 23.7-238.3-71.6-238.3-197 0-72.2 38.7-138.6 101.5-174.4 9.7-5.5 7.3-20.2-3.8-22.2A258.2 258.2 0 0 0 283.2 0c-141.3 0-256 114.5-256 256 0 141.3 114.5 256 256 256z"/>
+                </svg>
+                <span id="theme-label">Modo oscuro</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- ===================== -->
+        <!-- VISTA 1: LISTA        -->
+        <!-- ===================== -->
+        <div id="list-view">
+
+            <section class="filters">
+
+                <label class="search">
+                    <svg class="icon" viewBox="0 0 512 512" aria-hidden="true">
+                        <path d="M505 442.7 405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/>
+                    </svg>
+                    <input
+                        type="search"
+                        id="search"
+                        placeholder="Buscar un país..."
+                        aria-label="Buscar país por nombre"
+                        autocomplete="off"
+                    >
+                </label>
+
+                <div class="select-wrap">
+                    <select id="region" aria-label="Filtrar por región">
+                        <option value="">Filtrar por región</option>
+                        <option value="Africa">África</option>
+                        <option value="Americas">América</option>
+                        <option value="Asia">Asia</option>
+                        <option value="Europe">Europa</option>
+                        <option value="Oceania">Oceanía</option>
+                    </select>
+                </div>
+
+            </section>
+
+            <!-- Mensajes de carga / error / sin resultados -->
+            <p id="status" class="status" role="status">Cargando países...</p>
+
+            <section id="countries" class="countries" aria-label="Lista de países">
+            </section>
+
+        </div>
+
+        <!-- ===================== -->
+        <!-- VISTA 2: DETALLE      -->
+        <!-- ===================== -->
+        <div id="detail-view" class="hidden">
+
+            <button id="back-btn" class="back-btn" type="button">
+                <svg class="icon" viewBox="0 0 448 512" aria-hidden="true">
+                    <path d="M9.4 233.4a32 32 0 0 0 0 45.3l160 160a32 32 0 0 0 45.3-45.3L109.3 288H416a32 32 0 1 0 0-64H109.3l105.3-105.4a32 32 0 0 0-45.3-45.3l-160 160z"/>
+                </svg>
+                Volver
+            </button>
+
+            <section id="detail" class="detail" aria-live="polite">
+            </section>
+
+        </div>
+
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
