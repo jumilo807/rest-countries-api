@@ -1,17 +1,19 @@
 // =====================
-// CONFIGURACIÓN
+// CONFIGURACION
 // =====================
 
 // API REST Countries v5 (las versiones v1-v4 y v3.1 ya fueron retiradas).
 // Documentación: https://restcountries.com/docs/countries
 const API_URL = "https://api.restcountries.com/countries/v5";
 
-// Tu API key. En restcountries.com > API Keys debes agregar como
+// Con la API key. En restcountries.com > API Keys tuve que agregar como
 // "allowed origins" los dominios desde donde se abre la página:
-//   localhost, 127.0.0.1 y jumilo807.github.io
+// localhost, 127.0.0.1 y jumilo807.github.io
+// esto lo tuve que buscar con ayuda de la IA Gemini porque en la
+// documentación de la API no lo explican muy bien y no cargaba la página.
 const API_KEY = "rc_live_cc108260fd364a91b888d2d07610955c";
 
-// Solo pedimos los campos que la app usa (respuesta más liviana).
+// Solo pido los campos que la app usa (respuesta más liviana).
 const FIELDS = [
     "names.common",
     "names.native",
@@ -29,13 +31,15 @@ const FIELDS = [
     "borders"
 ].join(",");
 
-// El plan gratuito permite máximo 100 países por petición.
+// El plan gratuito permite máximo 100 paises por peticion. segun la documentación de la API, el límite máximo es 100.
 const PAGE_SIZE = 100;
 
-// Guardamos los datos en el navegador 24 h para no gastar cuota de la API.
-const CACHE_KEY = "rest-countries-cache-v1";
+// Guardamos los datos en el navegador 24 h para no gastar cuota de la API. esto porque 
+// la API gratuita tiene un límite de 1000 peticiones por mes, 
+// y si cada vez que se abre la página se hace una petición, se gastaría la cuota muy rapido. 
+const CACHE_KEY = "rest-countries-cache-v2";
 const CACHE_TIME = 24 * 60 * 60 * 1000;
-
+const NO_FLAG = "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200"><rect width="320" height="200" fill="#d5dbe1"/><text x="160" y="108" font-family="Arial" font-size="20" fill="#5a6b7c" text-anchor="middle">Sin bandera</text></svg>');
 
 // =====================
 // ELEMENTOS DEL DOM
@@ -80,17 +84,17 @@ let countriesData = [];
 
 async function getCountries() {
 
-    showStatus("Cargando países...");
+    showStatus("Cargando paises...");
 
     try {
 
-        // 1. Intentar usar la copia guardada en caché
+        // 1. Intentar usar la copia guardada en cache
         const cached = readCache();
 
         if (cached) {
             countriesData = cached;
         } else {
-            // 2. Si no hay caché, pedir todos los países a la API
+            // 2. Si no hay cache, pedir todos los paises a la API
             const rawCountries = await fetchAllCountries();
             countriesData = rawCountries
                 .map(normalizeCountry)
@@ -104,12 +108,12 @@ async function getCountries() {
     } catch (error) {
 
         console.error(
-            "Error al obtener países",
+            "Error al obtener paises",
             error
         );
 
         showStatus(
-            "No se pudieron cargar los países. " + error.message,
+            "No se pudieron cargar los paises. " + error.message,
             true
         );
 
@@ -118,8 +122,8 @@ async function getCountries() {
 }
 
 
-// Pide los países página por página (offset 0, 100, 200...)
-// hasta que la API indique que no hay más.
+// Pide los paises pagina por pagina (offset 0, 100, 200...)
+// hasta que la API indique que no hay mas.
 async function fetchAllCountries() {
 
     let all = [];
@@ -149,7 +153,7 @@ async function fetchAllCountries() {
         // Con la key de prueba la API responde datos de ejemplo
         if (json.data && json.data._demo) {
             throw new Error(
-                "La API respondió en modo demo: revisa que tu API key sea válida."
+                "La API respondio en modo demo: revisar que la API key sea valida."
             );
         }
 
@@ -178,7 +182,7 @@ function normalizeCountry(c) {
         code: c.codes ? c.codes.alpha_3 : "",
         name: names.common || "Sin nombre",
         nativeName: native.length ? native[0].common : names.common,
-        flag: c.flag ? (c.flag.url_svg || c.flag.url_png) : "",
+        flag: (c.flag && (c.flag.url_svg || c.flag.url_png)) || NO_FLAG,
         flagAlt: c.flag && c.flag.description
             ? c.flag.description
             : `Bandera de ${names.common}`,
@@ -196,7 +200,7 @@ function normalizeCountry(c) {
 
 
 // =====================
-// CACHÉ (localStorage)
+// CACHE (localStorage)
 // =====================
 
 function readCache() {
@@ -207,7 +211,7 @@ function readCache() {
             return saved.countries;
         }
     } catch (e) {
-        // Si localStorage no está disponible seguimos sin caché
+        // Si localStorage no esta disponible se sigue sin cache
     }
     return null;
 
@@ -236,7 +240,7 @@ function displayCountries(countries) {
     countriesContainer.innerHTML = "";
 
     if (countries.length === 0) {
-        showStatus("No se encontraron países con esos filtros.");
+        showStatus("No se encontraron paises con esos filtros.");
         return;
     }
 
@@ -245,10 +249,10 @@ function displayCountries(countries) {
     countries.forEach(country => {
 
         const card =
-        document.createElement("a");
+        document.createElement(country.code ? "a" : "div");
 
         card.classList.add("card");
-        card.href = `#/country/${country.code}`;
+        if (country.code) card.href = `#/country/${country.code}`;
 
         card.innerHTML = `
 
@@ -301,11 +305,11 @@ function displayDetail(code) {
 
     if (!country) {
         detailContainer.innerHTML =
-            "<p>País no encontrado.</p>";
+            "<p>Pais no encontrado.</p>";
         return;
     }
 
-    // Botones de los países vecinos (sólo los que existen en los datos)
+    // Botones de los paises vecinos (solo los que existen en los datos)
     const borderLinks = country.borders
         .map(b => countriesData.find(c => c.code === b))
         .filter(Boolean)
@@ -359,11 +363,11 @@ function displayDetail(code) {
 
 
 // =====================
-// NAVEGACIÓN (hash)
+// NAVEGACION (hash)
 // =====================
 
 // #/country/COL  -> vista de detalle
-// (vacío)        -> lista de países
+// (vacio)        -> lista de paises
 function router() {
 
     const match =
